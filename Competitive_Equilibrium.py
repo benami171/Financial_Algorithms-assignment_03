@@ -1,19 +1,17 @@
 import numpy as np
 import cvxpy as cp
+from tabulate import tabulate
 
 def competitive_equilibrium(valuations, budgets, supply):
     """
-    Computes the competitive equilibrium allocation and prices for a Fisher market.
-
     Parameters:
-        valuations (np.ndarray): A 2D array of shape (n, m) where valuations[i][j] is the value that person i 
-                                 has for resource j. (Assumed strictly positive.)
-        budgets (np.ndarray): A 1D array of length n representing the budget for each person.
-        supply (np.ndarray): A 1D array of length m representing the supply for each resource.
+        valuations: NxM matrix where valuations[i][j] is the value that person i gave for resource j.
+        budgets
+        supply 
 
     Returns:
-        allocation (np.ndarray): A 2D array of shape (n, m) representing the equilibrium allocation x[i][j].
-        prices (np.ndarray): A 1D array of length m representing the equilibrium prices for each resource.
+        allocation: NxM matrix representing the equilibrium allocation of resources to people.
+        prices: array representing the equilibrium prices for each resource (In class we saw Pa,Pb,Pc). 
     """
     n, m = valuations.shape
 
@@ -27,9 +25,11 @@ def competitive_equilibrium(valuations, budgets, supply):
     objective = cp.Maximize(cp.sum(cp.multiply(budgets, cp.log(utilities))))
     
     # Resource constraints: total allocation for each resource j must be <= its supply.
-    constraints = [cp.sum(x, axis=0) <= supply] # this function works like this: sum(x[i][j] for i in range(n)) <= supply[j]
+    # creating a constraint for each resource
+    # what it does is sum(x[i][j] for i in range(n)) <= supply[j] for each resource j
+    constraints = [cp.sum(x, axis=0) <= supply] 
     
-    # Solve the convex program
+    # Solve the program
     problem = cp.Problem(objective, constraints)
     problem.solve(solver=cp.SCS)
     
@@ -41,39 +41,30 @@ def competitive_equilibrium(valuations, budgets, supply):
 
 
 def print_equilibrium(allocation, prices, example_label=""):
-    """
-    Prints a nicely formatted equilibrium allocation and prices.
 
-    Parameters:
-        allocation (np.ndarray): 2D array where each row corresponds to a person.
-        prices (np.ndarray): 1D array of resource prices.
-        example_label (str): Example label to display (e.g., "EXAMPLE 2").
-    """
-    # Print header for allocation.
-    header_title = f"Equilibrium allocation {example_label} (each row corresponds to a person):"
-    print(header_title)
     num_people, num_resources = allocation.shape
-
-    # Print header row.
-    header = "Person".ljust(10) + "".join([f"Resource {j}".rjust(15) for j in range(num_resources)])
-    print(header)
-    print("-" * len(header))
-
-    # Print each person's allocation with four decimal places.
+    # Prepare allocation data for tabulate
+    headers = ["Person"] + [f"Resource {j}" for j in range(num_resources)]
+    table = []
     for i in range(num_people):
-        row_str = f"{i}".ljust(10)
-        for j in range(num_resources):
-            row_str += f"{allocation[i, j]:15.4f}"
-        print(row_str)
-
-    # Print equilibrium prices.
-    price_header_title = f"\nEquilibrium prices {example_label} (for each resource):"
-    print(price_header_title)
-    price_header = "Resource".ljust(10) + "Price".rjust(15)
-    print(price_header)
-    print("-" * len(price_header))
+        row = [f"{i}"] + [f"{allocation[i, j]:.4f}" for j in range(num_resources)]
+        table.append(row)
+    allocation_table = tabulate(table, headers=headers, tablefmt="grid")
+    
+    # Prepare prices data for tabulate
+    price_headers = ["Resource", "Price"]
+    price_table = []
     for j, price in enumerate(prices):
-        print(f"{j}".ljust(10) + f"{price:15.4f}")
+        price_table.append([f"{j}", f"{price:.4f}"])
+    prices_table = tabulate(price_table, headers=price_headers, tablefmt="grid")
+    
+    # Print the tables with labels
+    print(f"Equilibrium allocation {example_label}:")
+    print(allocation_table)
+    print("\nEquilibrium prices {0} :".format(example_label))
+    print(prices_table, "\n")
+    print("--------------------------------------------------\n")
+
 
 if __name__ == "__main__":
 
