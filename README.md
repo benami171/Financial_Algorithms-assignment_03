@@ -21,7 +21,7 @@ The code defines two main functions:
 ## Can llm solve these examples ? 
 - if so, what is the algorithm it uses ?
 - Does it gives good answers ? 
-- **You can see here the results of o3-mini** [conversation](https://chatgpt.com/share/67ec0ace-42b8-8004-a939-10ff1721c27a)
+- **You can see [here](https://chatgpt.com/share/67ec0ace-42b8-8004-a939-10ff1721c27a) o3-mini's answers.**
 
 ## Prerequisites
 
