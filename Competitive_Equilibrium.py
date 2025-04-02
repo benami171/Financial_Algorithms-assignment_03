@@ -4,34 +4,35 @@ from tabulate import tabulate
 
 def competitive_equilibrium(valuations, budgets, supply):
     """
-    Parameters:
+    parameters:
         valuations: NxM matrix where valuations[i][j] is the value that person i gave for resource j.
         budgets
         supply 
 
-    Returns:
+    returns:
         allocation: NxM matrix representing the equilibrium allocation of resources to people.
-        prices: array representing the equilibrium prices for each resource (In class we saw Pa,Pb,Pc). 
+        prices: array representing the equilibrium prices for each resource 
+        (In class we saw Pa,Pb,Pc). 
     """
     n, m = valuations.shape
 
-    # Define the allocation variables: x[i][j] >= 0 represents allocation of resource j to person i.
+    # this is the definition of the allocation variables where x[i][j] >= 0 represents allocation of resource j to person i.
     x = cp.Variable((n, m), nonneg=True)
     
-    # Each person’s utility is the sum of the allocated amounts weighted by their valuations.
+    # each person’s utility is the sum of the allocated amounts weighted by their valuations.
     utilities = cp.sum(cp.multiply(valuations, x), axis=1)
     
-    # Maximize sum_i (B_i * log(utility_i))
+    # maximize sum_i (B_i * log(utility_i))
     objective = cp.Maximize(cp.sum(cp.multiply(budgets, cp.log(utilities))))
     
-    # Resource constraints: total allocation for each resource j must be <= its supply.
+    # resource constraints: total allocation for each resource j must be <= its supply.
     # creating a constraint for each resource
     # what it does is sum(x[i][j] for i in range(n)) <= supply[j] for each resource j
     constraints = [cp.sum(x, axis=0) <= supply] 
     
-    # Solve the program
+    #defining the problem and solving it
     problem = cp.Problem(objective, constraints)
-    problem.solve(solver=cp.SCS)
+    problem.solve(solver=cp.SCS) # SCS is a solver for convex optimization problems, without it it will not work.
     
     # Retrieve the equilibrium allocation and the dual variables (prices).
     allocation = x.value
@@ -80,7 +81,7 @@ if __name__ == "__main__":
 
 
 
-    # Example 2
+    # Example 2 two agents have the same valuations and budget for the resources
     valuations2 = np.array([[5, 5],
                             [5, 5],
                             [3, 6],], dtype=float)
@@ -92,19 +93,19 @@ if __name__ == "__main__":
     print_equilibrium(allocation2, prices2, "EXAMPLE 2")
 
 
-    # Example 3
+    # Example 3 3X3 matrix with different valuations and budgets
     valuations3 = np.array([[10, 4, 2],
                             [3, 9, 5],
                             [5, 2, 8]], dtype=float)
 
-    budgets3 = np.array([50, 30, 20], dtype=float)  # budgets for the 3 people
-    supply3 = np.array([1, 1, 1], dtype=float)         # supply of each resource
+    budgets3 = np.array([50, 30, 20], dtype=float) 
+    supply3 = np.array([1, 1, 1], dtype=float)       
 
     allocation3, prices3 = competitive_equilibrium(valuations3, budgets3, supply3)
     print_equilibrium(allocation3, prices3, "EXAMPLE 3")
 
 
-    # Example 4
+    # Example 4 4X3 matrix with different valuations but SAME budgets.
     valuations4 = np.array([
         [6, 4, 3],    
         [3, 8, 5],    
@@ -119,14 +120,15 @@ if __name__ == "__main__":
     print_equilibrium(allocation4, prices4, "EXAMPLE 4")
 
 
-    # Example 5
+    # Example 5  2X2 matrix with different valuations and budgets.
+    # but the supply is different for each resource.
     valuations5 = np.array([
         [7, 3],   # Person 1's valuations
         [5, 6]    # Person 2's valuations
     ], dtype=float)
 
-    budgets5 = np.array([50, 50], dtype=float)  # budgets for both people
-    supply5 = np.array([2, 1], dtype=float)        # different supply: 2 units of resource 1 and 1 unit of resource 2
+    budgets5 = np.array([50, 50], dtype=float)  
+    supply5 = np.array([2, 1], dtype=float)        
 
     allocation5, prices5 = competitive_equilibrium(valuations5, budgets5, supply5)
     print_equilibrium(allocation5, prices5, "EXAMPLE 5")
