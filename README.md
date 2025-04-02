@@ -2,20 +2,32 @@
 
 This repository contains a Python implementation to compute the competitive equilibrium allocation and prices in a Fisher market setting. In these markets, agents (people) with given budgets purchase divisible resources (goods) with specified supplies and valuations. The equilibrium is computed by solving a convex optimization problem using the Eisenberg–Gale formulation.
 
+---
+
 ## Overview
 
 The code defines two main functions:
 
-- **competitive_equilibrium:**  
-  This function takes as input:
-  - A 2D NumPy array `valuations` of shape (n, m), where `valuations[i][j]` is the value that person *i* assigns to resource *j*.
-  - A 1D NumPy array `budgets` of length *n* that specifies each person's budget.
-  - A 1D NumPy array `supply` of length *m* that specifies the total available units for each resource.
-  
-  It solves a convex optimization problem that maximizes the sum of the weighted logarithms of the agents' utilities (where utility is defined as the sum of the allocated amounts weighted by the corresponding valuations). The dual variables of the resource constraints give the equilibrium prices.
+### 1. `competitive_equilibrium`
 
-- **print_equilibrium:**  
-  This function nicely prints the equilibrium allocation and resource prices. It formats the output so that each row corresponds to a person’s allocation, and it displays the price for each resource.
+- **Inputs:**
+  - A 2D NumPy array `valuations` (shape **n × m**), where `valuations[i][j]` represents the value that person *i* assigns to resource *j*.
+  - A 1D NumPy array `budgets` of length **n**, representing each agent's budget.
+  - A 1D NumPy array `supply` of length **m**, outlining the total available units for each resource.
+
+- **What It Does:**
+  - Solves a convex optimization problem that maximizes the sum of the weighted logarithms of agent utilities.  
+    (Each agent's utility is defined as the sum of allocated amounts, weighted by their valuations.)
+  - The **dual variables** of the resource constraints are interpreted as the equilibrium prices.
+
+
+### 2. `print_equilibrium`
+
+- **What It Does:**
+  - Neatly prints the equilibrium allocation and resource prices in formatted tables.
+  - Each row represents a person’s allocation, and each resource's equilibrium price is displayed in its own column.
+
+---
 
 ## Results
 
@@ -135,10 +147,14 @@ Equilibrium prices EXAMPLE 5 :
 --------------------------------------------------
 ```
 
+---
 
-## Can llm solve these examples ? 
-- Yes! and it can do it actually very well.
-**You can see [here](https://chatgpt.com/share/67ec0ace-42b8-8004-a939-10ff1721c27a) o3-mini's answers.**
+## LLM Capabilities
+
+Yes, an LLM can solve these examples effectively!  
+For more details, see [o3-mini's answers **Here**](https://chatgpt.com/share/67ec0ace-42b8-8004-a939-10ff1721c27a).
+
+---
 
 ## Prerequisites
 
